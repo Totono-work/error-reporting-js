@@ -1,0 +1,32 @@
+{
+  "name": "@totono/error-reporting",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    ".": "./client.js",
+    "./browser": "./browser.js",
+    "./node": "./node.js",
+    "./react": "./react.js",
+    "./next": "./next.js"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "files": [
+    "*.js",
+    "*.d.ts",
+    "README.md"
+  ],
+  "bin": {
+    "totono-error-artifact": "./upload.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Totono-work/error-reporting-js.git"
+  }
+}
