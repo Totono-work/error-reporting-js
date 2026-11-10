@@ -34,3 +34,29 @@ npx totono-error-artifact source_map dist/app.js.map web "$RELEASE" "" /assets/a
 Upload one map per bundle or chunk. Use `web` for browser bundles and `node` for server bundles. Pass the same `release` and `build` values used to initialize the SDK. Pass `""` for `build` if you omit it in the SDK. Reports without a release use `unknown`.
 
 Use the generated JavaScript file's path as it appears in the reported stack frame. For example, use `/assets/app.js` for `https://example.com/assets/app.js`.
+
+### Automate uploads in CI
+
+Set `RELEASE` in your build job and use its value for `BUILD_VERSION` when you initialize the SDK. If you also set the SDK's `build` option, expose that same value as `TOTONO_ERROR_BUILD`. Make `TOTONO_ERROR_ARTIFACT_KEY` available to the upload step as a CI secret.
+
+Run this Bash step from the application directory after `npm ci` and the production build, before publishing the assets. This example assumes the build writes maps to `dist/assets` and serves the matching bundles under `/assets/`.
+
+```bash
+set -euo pipefail
+shopt -s nullglob
+: "${RELEASE:?Set RELEASE to the value used by the SDK}"
+
+maps=(dist/assets/*.js.map)
+if [[ -z ${maps[0]:-} ]]; then
+  echo "No source maps found in dist/assets" >&2
+  exit 1
+fi
+
+for map in "${maps[@]}"; do
+  bundle=${map#dist}
+  ./node_modules/.bin/totono-error-artifact source_map \
+    "$map" web "$RELEASE" "${TOTONO_ERROR_BUILD:-}" "${bundle%.map}"
+done
+```
+
+Adjust the glob and bundle paths to match your build output and reported stack frames. If you also build server bundles, run a separate upload step with `node` and the paths from server stack frames. Publish the generated JavaScript without the `.map` files.
