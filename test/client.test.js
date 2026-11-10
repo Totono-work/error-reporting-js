@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { init } from "../node.js";
 
 const options = {
-  origin: "https://example.test", key: "ttr_" + "a".repeat(43), release: "test", captureFatal: false,
+  key: "ttr_" + "a".repeat(43), release: "test", captureFatal: false,
 };
 
 test("concurrent Node scopes do not share user or tag context", async () => {

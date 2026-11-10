@@ -1,6 +1,6 @@
 {
   "name": "@totono/error-reporting",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "exports": {
     ".": "./client.js",
@@ -24,6 +24,10 @@
   ],
   "bin": {
     "totono-error-artifact": "./upload.js"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
   },
   "repository": {
     "type": "git",

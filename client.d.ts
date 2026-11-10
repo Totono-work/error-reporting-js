@@ -8,9 +8,8 @@ export type ErrorScope = {
   fingerprint?: string[];
 };
 export interface ReportingOptions {
-  origin: string;
   key: string;
-  release: string;
+  release?: string;
   build?: string;
   environment?: string;
   device?: DiagnosticFields;

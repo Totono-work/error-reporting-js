@@ -6,9 +6,9 @@ async function main() {
   if (!["source_map", "dsym"].includes(kind) || !path) {
     throw new Error("usage: totono-error-artifact source_map FILE PLATFORM RELEASE BUILD BUNDLE_PATH | dsym FILE UUID ARCH");
   }
-  const endpoint = new URL("/api/error-reporting/v1/artifacts", process.env.TOTONO_ERROR_ORIGIN);
+  const endpoint = "https://totono.work/api/error-reporting/v1/artifacts";
   const key = process.env.TOTONO_ERROR_ARTIFACT_KEY;
-  if (endpoint.protocol !== "https:" || endpoint.username || endpoint.password || !/^tr_art_[\w-]{43}$/.test(key ?? "")) {
+  if (!/^tr_art_[\w-]{43}$/.test(key ?? "")) {
     throw new Error("invalid_artifact_configuration");
   }
   const info = await stat(path);

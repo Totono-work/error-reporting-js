@@ -1,7 +1,8 @@
 import { createClient } from "./client.js";
 
 export function init(options) {
-  const storageKey = `totono:error-reporting:v1:${options.origin}:${options.key}`;
+  // Preserve queued reports from clients already using the Totono collector.
+  const storageKey = `totono:error-reporting:v1:https://totono.work:${options.key}`;
   const client = createClient({
     ...options,
     platform: "web",

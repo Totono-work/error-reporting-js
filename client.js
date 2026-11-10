@@ -1,3 +1,4 @@
+const ingestionEndpoint = "https://totono.work/api/public/error-reporting/v1/events";
 const MAX_AGE = 30 * 86_400_000;
 const MAX_QUEUE = 50;
 const MAX_BYTES = 900_000;
@@ -72,10 +73,6 @@ function cleanUser(user, identifiable) {
 }
 
 export function createClient(options) {
-  const endpoint = new URL("/api/public/error-reporting/v1/events", options.origin);
-  if (endpoint.protocol !== "https:" && !(endpoint.protocol === "http:" && ["localhost", "127.0.0.1", "[::1]"].includes(endpoint.hostname))) {
-    throw new TypeError("invalid_endpoint");
-  }
   if (!/^ttr_[\w-]{43}$/.test(options.key)) throw new TypeError("invalid_ingestion_key");
   const transport = options.fetch ?? globalThis.fetch.bind(globalThis);
   const allowedFields = new Set(options.allowedRequestFields);
@@ -124,7 +121,7 @@ export function createClient(options) {
       const event = {
         id: (options.randomUUID ?? (() => globalThis.crypto.randomUUID()))(),
         timestamp: new Date().toISOString(), platform: options.platform,
-        release: cleanText(options.release, 100), build: cleanText(options.build, 100),
+        release: cleanText(options.release, 100) || "unknown", build: cleanText(options.build, 100),
         environment: cleanText(options.environment ?? "production", 64), severity: scoped.severity ?? "error",
         exceptions: collectExceptions(value, options.isApplicationFrame), breadcrumbs: breadcrumbs.slice(),
         tags: cleanFields({ ...tags, ...scoped.tags }), device: cleanFields(options.device),
@@ -155,7 +152,7 @@ export function createClient(options) {
       const batch = queue.slice(0, 10);
       const ids = new Set(batch.map(event => event.id));
       try {
-        const response = await transport(endpoint, {
+        const response = await transport(ingestionEndpoint, {
           method: "POST", credentials: "omit", redirect: "error",
           headers: { "Content-Type": "application/json", "X-Totono-Error-Key": options.key },
           body: JSON.stringify({ version: 1, events: batch }),
